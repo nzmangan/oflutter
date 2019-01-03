@@ -19,8 +19,8 @@ class EventInformationMapper {
 
     var map = Map<String, dynamic>();
     map['events'] = eventMap;
-    map['lastEventUpdate'] = eventsInformation.lastEventUpdate;
-    map['lastSync'] = eventsInformation.lastSync;
+    map['lastEventUpdate'] = eventsInformation.lastEventUpdate.toIso8601String();
+    map['lastSync'] = eventsInformation.lastSync.toIso8601String();
 
     return json.encode(map);
   }

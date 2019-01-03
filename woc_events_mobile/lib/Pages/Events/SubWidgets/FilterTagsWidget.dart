@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:woc_events_mobile/Lib/AppTheme.dart';
 import 'package:woc_events_mobile/Lib/DI.dart';
 import 'package:woc_events_mobile/Models/EventsFilter.dart';
-import 'package:woc_events_mobile/Pages/Events/EventsScreenState.dart';
+import 'package:woc_events_mobile/Pages/Events/EventsScreen.dart';
 import 'package:woc_events_mobile/Services/ThemeService.dart';
 
 class FilterTagsWidget extends StatefulWidget {

@@ -1,29 +1,62 @@
+import 'dart:async';
+import 'package:sentry/sentry.dart';
 import 'package:flutter/material.dart';
-import 'package:woc_events_mobile/Lib/AppTheme.dart';
-import 'package:woc_events_mobile/Lib/DI.dart';
-import 'package:woc_events_mobile/Pages/Events/EventsScreen.dart';
+import 'package:woc_events_mobile/Services/SettingService.dart';
+import 'package:woc_events_mobile/Widgets/MyApp.dart';
 
-void main() => runApp(new MyApp());
+SentryClient _sentry;
 
-class MyApp extends StatefulWidget {
-  @override
-  MyAppState createState() => new MyAppState();
+bool get isInDebugMode {
+  bool inDebugMode = false;
+  assert(inDebugMode = true);
+  return inDebugMode;
 }
 
-class MyAppState extends State<MyApp> {
-  var _themeService = DI.getThemeService();
-  AppTheme theme;
+/// Reports [error] along with its [stackTrace] to Sentry.io.
+Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
+  print('Caught error: $error');
 
-  MyAppState() {
-    theme = _themeService.getTheme();
+  // Errors thrown in development mode are unlikely to be interesting. You can
+  // check if you are running in dev mode using an assertion and omit sending
+  // the report.
+  if (isInDebugMode) {
+    print(stackTrace);
+    print('In dev mode. Not sending report to Sentry.io.');
+    return;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: "Wellington OC Events",
-      home: new EventsScreen(),
-      theme: ThemeData(fontFamily: theme.fontMain),
-    );
+  print('Reporting to Sentry.io...');
+
+  if (_sentry == null) {
+    var ss = new SettingService();
+    var sentry = await ss.sentry();
+    _sentry = new SentryClient(dsn: sentry);
   }
+
+  final SentryResponse response = await _sentry.captureException(
+    exception: error,
+    stackTrace: stackTrace,
+  );
+
+  if (response.isSuccessful) {
+    print('Success! Event ID: ${response.eventId}');
+  } else {
+    print('Failed to report to Sentry.io: ${response.error}');
+  }
+}
+
+Future<Null> main() async {
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    if (isInDebugMode) {
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      Zone.current.handleUncaughtError(details.exception, details.stack);
+    }
+  };
+
+  runZoned<Future<Null>>(() async {
+    runApp(new MyApp());
+  }, onError: (error, stackTrace) async {
+    await _reportError(error, stackTrace);
+  });
 }

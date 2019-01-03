@@ -24,7 +24,7 @@ class FileService {
 
   Future writeFile(String filename, String content) async {
     try {
-      final file = await _localFile('events.json');
+      final file = await _localFile(filename);
       file.writeAsString(content);
     } catch (e) {
       return null;

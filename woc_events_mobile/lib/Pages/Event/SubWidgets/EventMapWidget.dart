@@ -1,4 +1,3 @@
-import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,6 +6,7 @@ import 'package:woc_events_mobile/Lib/Shared.dart';
 import 'package:woc_events_mobile/Models/EventInformation.dart';
 import 'package:woc_events_mobile/Services/ConnectivityService.dart';
 import 'package:woc_events_mobile/Services/LocationService.dart';
+import 'package:woc_events_mobile/Services/MapService.dart';
 
 class EventMapWidget extends StatefulWidget {
   final EventInformation event;
@@ -24,6 +24,7 @@ class EventMapWidget extends StatefulWidget {
 class EventMapWidgetState extends State<EventMapWidget> {
   LocationService _locationService = DI.getLocationService();
   ConnectivityService _connectivityService = DI.getConnectivityService();
+  MapService _mapService = DI.getMapService();
 
   double _zoom = 13;
   double _mapHeight = 1;
@@ -100,18 +101,7 @@ class EventMapWidgetState extends State<EventMapWidget> {
     if (currentPosition != null && TargetPlatform.android == platform) {
       directions = FlatButton(
         onPressed: () {
-          String origin = '${currentPosition.latitude},${currentPosition.longitude}';
-          String destination = '$lat,$lng';
-
-          if (TargetPlatform.android == platform) {
-            String url = "https://www.google.com/maps/dir/?api=1&origin=" + origin + "&destination=" + destination + "&travelmode=driving";
-            final AndroidIntent intent = new AndroidIntent(
-              action: 'action_view',
-              data: Uri.encodeFull(url),
-              package: 'com.google.android.apps.maps',
-            );
-            intent.launch();
-          }
+          _mapService.openGoogleMaps(currentPosition, LatLng(lat, lng), platform);
         },
         child: Icon(FontAwesomeIcons.car, color: Colors.white),
       );

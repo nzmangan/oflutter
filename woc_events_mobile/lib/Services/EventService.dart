@@ -25,6 +25,7 @@ class EventService {
   }
 
   Future saveEvents(EventsInformation events) async {
-    await _fileService.writeFile('events.json', EventInformationMapper.toJsonFromList(events));
+    var json = EventInformationMapper.toJsonFromList(events);
+    await _fileService.writeFile('events.json', json);
   }
 }

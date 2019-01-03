@@ -5,6 +5,7 @@ import 'package:woc_events_mobile/Services/EventImageService.dart';
 import 'package:woc_events_mobile/Services/EventService.dart';
 import 'package:woc_events_mobile/Services/FileService.dart';
 import 'package:woc_events_mobile/Services/LocationService.dart';
+import 'package:woc_events_mobile/Services/MapService.dart';
 import 'package:woc_events_mobile/Services/SettingService.dart';
 import 'package:woc_events_mobile/Services/ThemeService.dart';
 
@@ -43,5 +44,9 @@ class DI {
 
   static getConnectivityService() {
     return new ConnectivityService();
+  }
+
+  static getMapService() {
+    return new MapService();
   }
 }

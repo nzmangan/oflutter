@@ -20,16 +20,22 @@ class SettingService {
   Future<String> apiMapKey() async {
     return (await _getSecret()).apiMapKey;
   }
+
+  Future<String> sentry() async {
+    return (await _getSecret()).sentry;
+  }
 }
 
 class Secret {
   final String apiMapKey;
   final String url;
-  Secret({this.apiMapKey = "", this.url = ""});
+  final String sentry;
+  Secret({this.apiMapKey = "", this.url = "", this.sentry = ""});
   factory Secret.fromJson(Map<String, dynamic> jsonMap) {
     return new Secret(
       apiMapKey: jsonMap["apiMapKey"],
       url: jsonMap["url"],
+      sentry: jsonMap["sentry"],
     );
   }
 }
@@ -40,8 +46,7 @@ class SecretLoader {
   SecretLoader({this.secretPath});
 
   Future<Secret> load() {
-    return rootBundle.loadStructuredData<Secret>(this.secretPath,
-        (jsonStr) async {
+    return rootBundle.loadStructuredData<Secret>(this.secretPath, (jsonStr) async {
       final secret = Secret.fromJson(json.decode(jsonStr));
       return secret;
     });

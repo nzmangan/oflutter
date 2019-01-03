@@ -22,6 +22,7 @@ dependencies:
   connectivity: ^0.3.2
   android_intent: ^0.2.1
   location: ^1.4.1
+  sentry: ^2.1.1
 
 flutter_icons:
   android: true
