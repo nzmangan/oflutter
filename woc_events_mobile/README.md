@@ -1,8 +1,3 @@
 # woc_events_mobile
 
-A new Flutter project.
-
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+flutter build apk --build-number=3 --build-name="1.1.1"

@@ -1,31 +1,34 @@
 import 'dart:convert';
-
 import 'package:logging/logging.dart';
 import 'package:woc_events_mobile/Lib/DI.dart';
 import 'package:woc_events_mobile/Models/EventInformation.dart';
+import 'package:woc_events_mobile/Models/EventsInformation.dart';
 
 class EventInformationMapper {
-  static List<EventInformation> fromJsonToList(String contents) {
-    return (json.decode(contents) as List)
-        .map((e) => eventInformationFromJson(e))
-        .toList()
-        .cast<EventInformation>();
+  static EventsInformation fromJson(String contents) {
+    var wrapper = json.decode(contents);
+    var events = (wrapper['events'] as List).map((e) => eventInformationFromJson(e)).toList().cast<EventInformation>();
+    return EventsInformation()
+      ..lastEventUpdate = createDate(wrapper, 'lastEventUpdate')
+      ..lastSync = createDate(wrapper, 'lastSync')
+      ..events = events;
   }
 
-  static String toJsonFromList(List<EventInformation> events) {
-    var map = events.map((f) => eventInformationToJson(f)).toList();
+  static String toJsonFromList(EventsInformation eventsInformation) {
+    var eventMap = eventsInformation.events.map((f) => eventInformationToJson(f)).toList();
+
+    var map = Map<String, dynamic>();
+    map['events'] = eventMap;
+    map['lastEventUpdate'] = eventsInformation.lastEventUpdate;
+    map['lastSync'] = eventsInformation.lastSync;
+
     return json.encode(map);
   }
 
   static String getStringValue(Map<String, dynamic> json, key) {
     var value = json[key] as String;
 
-    value = (value ?? '')
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('â', '-')
-        .replaceAll('-Â', '-')
-        .replaceAll('â', '\'')
-        .replaceAll('Â', '');
+    value = (value ?? '').replaceAll('&nbsp;', ' ').replaceAll('â', '-').replaceAll('-Â', '-').replaceAll('â', '\'').replaceAll('Â', '');
 
     return value;
   }
@@ -78,9 +81,7 @@ class EventInformationMapper {
     return ei;
   }
 
-  static Map<String, dynamic> eventInformationToJson(
-          EventInformation instance) =>
-      <String, dynamic>{
+  static Map<String, dynamic> eventInformationToJson(EventInformation instance) => <String, dynamic>{
         'date': instance.date?.toIso8601String(),
         'updated': instance.updated?.toIso8601String(),
         'country': instance.country,

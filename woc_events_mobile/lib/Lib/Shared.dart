@@ -20,4 +20,24 @@ class Shared {
         .toList()
         .cast<T>();
   }
+
+  static double parseStringToDouble(String input) {
+    if (input == null || input.trim() == '') {
+      return null;
+    }
+
+    double value;
+
+    try {
+      value = double.parse(input);
+    } catch (Exception) {
+      value = null;
+    }
+
+    if (value == 0 || value == 0.000000) {
+      return null;
+    }
+
+    return value;
+  }
 }

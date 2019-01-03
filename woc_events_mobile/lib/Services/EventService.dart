@@ -1,31 +1,30 @@
 import 'package:woc_events_mobile/Lib/DI.dart';
 import 'package:woc_events_mobile/Mappers/EventInformationMapper.dart';
-import 'package:woc_events_mobile/Models/EventInformation.dart';
+import 'package:woc_events_mobile/Models/EventsInformation.dart';
 
 class EventService {
   var _dataService = DI.getDataService();
   var _settingService = DI.getSettingService();
   var _fileService = DI.getFileService();
 
-  Future<List<EventInformation>> events() async {
+  Future<EventsInformation> events() async {
     var url = await _settingService.urlEvents();
-    return await _dataService.getList(
-      url,
-      EventInformationMapper.fromJsonToList,
+    return await _dataService.get(
+      url + '/api/events',
+      EventInformationMapper.fromJson,
     );
   }
 
-  Future<List<EventInformation>> readEvents() async {
+  Future<EventsInformation> readEvents() async {
     try {
       String contents = await _fileService.readFile('events.json');
-      return EventInformationMapper.fromJsonToList(contents);
+      return EventInformationMapper.fromJson(contents);
     } catch (e) {
-      return [];
+      return null;
     }
   }
 
-  Future saveEvents(List<EventInformation> events) async {
-    await _fileService.writeFile(
-        'events.json', EventInformationMapper.toJsonFromList(events));
+  Future saveEvents(EventsInformation events) async {
+    await _fileService.writeFile('events.json', EventInformationMapper.toJsonFromList(events));
   }
 }
