@@ -55,7 +55,8 @@ class EventsScreenState extends State<EventsScreen> {
     eventsFilter.setAllCubs(clubs);
 
     eventService.saveEvents(events);
-    var text = DateTime.now().day.toString() + Shared.getSuffix(DateTime.now().day) + " of " + new DateFormat('MMMM HH:mm').format(DateTime.now());
+    var date = events.lastEventUpdate;
+    var text = '${date.day}${Shared.getSuffix(date.day)} of ${new DateFormat('MMMM HH:mm').format(DateTime.now())}';
     _updated = prefix + text;
     filterEvents();
   }
